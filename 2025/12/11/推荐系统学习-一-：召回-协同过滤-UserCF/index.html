@@ -1,0 +1,637 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="WhosefriendA">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="基于用户的协同过滤(userCF)第一步：用户相似度计算杰卡德相似系数被推荐用户A，另一个用户B，只计算他们共同 item 数 占 A item 数 的比值。公式表现为： 1w_&#123;uv&#125; &#x3D; \frac&#123;|N(u) \cap N(v)|&#125;&#123;|N(u) \cup N(v)|&#125; 余弦相似度通过向量化表示用户，对两个用户求向量夹角，可以体现出两">
+<meta property="og:type" content="article">
+<meta property="og:title" content="推荐系统学习(一)：召回-协同过滤-UserCF">
+<meta property="og:url" content="https://whosefrienda.github.io/2025/12/11/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0-%E4%B8%80-%EF%BC%9A%E5%8F%AC%E5%9B%9E-%E5%8D%8F%E5%90%8C%E8%BF%87%E6%BB%A4-UserCF/index.html">
+<meta property="og:site_name" content="WhosefriendA&#39;s Blog">
+<meta property="og:description" content="基于用户的协同过滤(userCF)第一步：用户相似度计算杰卡德相似系数被推荐用户A，另一个用户B，只计算他们共同 item 数 占 A item 数 的比值。公式表现为： 1w_&#123;uv&#125; &#x3D; \frac&#123;|N(u) \cap N(v)|&#125;&#123;|N(u) \cup N(v)|&#125; 余弦相似度通过向量化表示用户，对两个用户求向量夹角，可以体现出两">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-12-11T10:16:51.000Z">
+<meta property="article:modified_time" content="2025-12-11T10:23:56.297Z">
+<meta property="article:author" content="WhosefriendA">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>推荐系统学习(一)：召回-协同过滤-UserCF - WhosefriendA&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"whosefrienda.github.io","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 8.1.1"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>谁的友人A的博客</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="推荐系统学习(一)：召回-协同过滤-UserCF"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-12-11 18:16" pubdate>
+          2025年12月11日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          1.3k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          12 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">推荐系统学习(一)：召回-协同过滤-UserCF</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="基于用户的协同过滤-userCF"><a href="#基于用户的协同过滤-userCF" class="headerlink" title="基于用户的协同过滤(userCF)"></a>基于用户的协同过滤(userCF)</h2><h4 id="第一步：用户相似度计算"><a href="#第一步：用户相似度计算" class="headerlink" title="第一步：用户相似度计算"></a>第一步：用户相似度计算</h4><h5 id="杰卡德相似系数"><a href="#杰卡德相似系数" class="headerlink" title="杰卡德相似系数"></a>杰卡德相似系数</h5><p>被推荐用户A，另一个用户B，只计算他们共同 item 数 占 A item 数 的比值。公式表现为：</p>
+<figure class="highlight latex"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs latex">w<span class="hljs-built_in">_</span>&#123;uv&#125; = <span class="hljs-keyword">\frac</span>&#123;|N(u) <span class="hljs-keyword">\cap</span> N(v)|&#125;&#123;|N(u) <span class="hljs-keyword">\cup</span> N(v)|&#125;<br></code></pre></td></tr></table></figure>
+<h5 id="余弦相似度"><a href="#余弦相似度" class="headerlink" title="余弦相似度"></a>余弦相似度</h5><p>通过向量化表示用户，对两个用户求向量夹角，可以体现出两个人兴趣方向是否相似，相比于杰卡德系数消除了热点造成的影响。在transformer里也有类似的求向量相似度，不过是使用比较简单的点积而非余弦。余弦相似度的公式是：</p>
+<figure class="highlight latex"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs latex">w<span class="hljs-built_in">_</span>&#123;uv&#125; = <span class="hljs-keyword">\frac</span>&#123;|N(u) <span class="hljs-keyword">\cap</span> N(v)|&#125;&#123;<span class="hljs-keyword">\sqrt</span>&#123;|N(u)|<span class="hljs-keyword">\cdot</span>|N(v)|&#125;&#125;<br></code></pre></td></tr></table></figure>
+<p>上面是集合形式的表达，由于喜欢，不喜欢是二元向量，所以可以如上表达，真正的余弦相似度公式是：</p>
+<figure class="highlight latex"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs latex"><span class="hljs-keyword">\text</span>&#123;similarity&#125; = <span class="hljs-keyword">\cos</span>(<span class="hljs-keyword">\theta</span>) = <span class="hljs-keyword">\frac</span>&#123;A <span class="hljs-keyword">\cdot</span> B&#125;&#123;<span class="hljs-keyword">\|</span>A<span class="hljs-keyword">\|</span> <span class="hljs-keyword">\|</span>B<span class="hljs-keyword">\|</span>&#125;<br></code></pre></td></tr></table></figure>
+<h5 id="皮尔逊相关系数"><a href="#皮尔逊相关系数" class="headerlink" title="皮尔逊相关系数"></a>皮尔逊相关系数</h5><p>有具体评分而不是只有二元关系时使用，可以去除每个人打分标准不同导致的误差。公式：</p>
+<figure class="highlight latex"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs latex">w<span class="hljs-built_in">_</span>&#123;uv&#125; = <span class="hljs-keyword">\frac</span>&#123;<span class="hljs-keyword">\sum</span><span class="hljs-built_in">_</span>&#123;i <span class="hljs-keyword">\in</span> I&#125;(r<span class="hljs-built_in">_</span>&#123;ui&#125; - <span class="hljs-keyword">\bar</span>&#123;r&#125;<span class="hljs-built_in">_</span>u)(r<span class="hljs-built_in">_</span>&#123;vi&#125; - <span class="hljs-keyword">\bar</span>&#123;r&#125;<span class="hljs-built_in">_</span>v)&#125;&#123;<span class="hljs-keyword">\sqrt</span>&#123;<span class="hljs-keyword">\sum</span><span class="hljs-built_in">_</span>&#123;i <span class="hljs-keyword">\in</span> I&#125;(r<span class="hljs-built_in">_</span>&#123;ui&#125; - <span class="hljs-keyword">\bar</span>&#123;r&#125;<span class="hljs-built_in">_</span>u)<span class="hljs-built_in">^</span>2&#125;<span class="hljs-keyword">\sqrt</span>&#123;<span class="hljs-keyword">\sum</span><span class="hljs-built_in">_</span>&#123;i <span class="hljs-keyword">\in</span> I&#125;(r<span class="hljs-built_in">_</span>&#123;vi&#125; - <span class="hljs-keyword">\bar</span>&#123;r&#125;<span class="hljs-built_in">_</span>v)<span class="hljs-built_in">^</span>2&#125;&#125;<br></code></pre></td></tr></table></figure>
+<h4 id="第二步：-候选物品推荐"><a href="#第二步：-候选物品推荐" class="headerlink" title="第二步： 候选物品推荐"></a>第二步： 候选物品推荐</h4><h5 id="简单加权平均"><a href="#简单加权平均" class="headerlink" title="简单加权平均"></a>简单加权平均</h5><p>直接用第一步得到的相似度来加权计算，然后多个用户的值平均，就是被推荐用户 u 对这个物品 p 的预测评分,公式：</p>
+<figure class="highlight latex"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs latex"><span class="hljs-keyword">\hat</span>&#123;r&#125;<span class="hljs-built_in">_</span>&#123;u,p&#125; = <span class="hljs-keyword">\frac</span>&#123;<span class="hljs-keyword">\sum</span><span class="hljs-built_in">_</span>&#123;v <span class="hljs-keyword">\in</span> S<span class="hljs-built_in">_</span>u&#125; w<span class="hljs-built_in">_</span>&#123;uv&#125; <span class="hljs-keyword">\,</span> r<span class="hljs-built_in">_</span>&#123;v,p&#125;&#125;&#123;<span class="hljs-keyword">\sum</span><span class="hljs-built_in">_</span>&#123;v <span class="hljs-keyword">\in</span> S<span class="hljs-built_in">_</span>u&#125; w<span class="hljs-built_in">_</span>&#123;uv&#125;&#125;<br></code></pre></td></tr></table></figure>
+<h5 id="考虑评分偏置"><a href="#考虑评分偏置" class="headerlink" title="考虑评分偏置"></a>考虑评分偏置</h5><p>考虑其他用户的平均评分来减少误差，并根据目标用户的平均评分进行调整，公式：</p>
+<figure class="highlight latex"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs latex"><span class="hljs-keyword">\hat</span>&#123;r&#125;<span class="hljs-built_in">_</span>&#123;u,p&#125; = <span class="hljs-keyword">\bar</span>&#123;r&#125;<span class="hljs-built_in">_</span>&#123;u&#125; + <span class="hljs-keyword">\frac</span>&#123;<span class="hljs-keyword">\sum</span><span class="hljs-built_in">_</span>&#123;v <span class="hljs-keyword">\in</span> S<span class="hljs-built_in">_</span>u&#125; w<span class="hljs-built_in">_</span>&#123;uv&#125; <span class="hljs-keyword">\,</span> (r<span class="hljs-built_in">_</span>&#123;v,p&#125; - <span class="hljs-keyword">\bar</span>&#123;r&#125;<span class="hljs-built_in">_</span>&#123;v&#125;)&#125;&#123;<span class="hljs-keyword">\sum</span><span class="hljs-built_in">_</span>&#123;v <span class="hljs-keyword">\in</span> S<span class="hljs-built_in">_</span>u&#125; w<span class="hljs-built_in">_</span>&#123;uv&#125;&#125;<br></code></pre></td></tr></table></figure>
+<h4 id="第三步：一些优化"><a href="#第三步：一些优化" class="headerlink" title="第三步：一些优化"></a>第三步：一些优化</h4><p>UserCF看起来很简单，但有个大问题：当用户数量很大时，计算所有用户对之间的相似度会非常耗时，时间复杂度达到  $O(|U|^2)$<br>但仔细观察就会发现，很多用户对之间根本没有共同行为的物品，相似度必然为0，计算它们就是浪费时间。我们可以利用这个特点来优化算法。 </p>
+<p>下面这个对<strong>离线计算相似度</strong>的优化的时间复杂度就不是和 u 指数级增长的了，而是和物品数成线性相关以及和每个物品被喜欢的用户数 $N(i)$ 指数级相关，虽然依然大，但是比用户指数级好的多，时间复杂度是$O(Σ|N(i)|²) ≈ O(N * k²)$，<br><strong>N</strong>  是遍历所有物品** i** ,**k <strong>是平均每个物品被喜欢的用户数，所以</strong> k² **是处理一个物品的平均计算量。</p>
+<p>如果用<strong>R</strong>表示用户-物品的总交互数，用$\bar{n}$表示每个物品的平均用户数，公式也可以表达为$O(R \cdot \bar{n})$</p>
+<p><strong>基于物品倒排表的优化</strong>：</p>
+<ol>
+<li><strong>构建倒排表</strong>：为每个物品维护一个用户列表，记录哪些用户对这个物品有过行为。这样就可以通过物品快速找到相关用户。</li>
+<li><strong>稀疏矩阵计算</strong>：创建一个矩阵$C[u][v]$来记录用户 u 和 v 的共同物品数量。遍历每个物品的用户列表，将列表中的用户两两配对，对应的$C[u][v]$值加1。</li>
+<li><strong>计算最终相似度</strong>：矩阵给出了余弦相似度公式的分子，再除以分母$\sqrt{|N(u)||N(v)|}$就得到了用户相似度。<br>上面说<strong>离线相似度矩阵</strong>是被推荐用户u和某用户v的，是单次计算，这个相似度矩阵要用于线上推荐，但是不能计算出所有用户对结果并全部存入矩阵拿给线上推荐，而是在离线时会存下**top k **个最相似的矩阵。</li>
+<li><strong>线上召回</strong>：有了用户相似度矩阵，UserCF的推荐流程通常采用以下策略来提高效率：<br>收集 top k 里用户交互过的物品作为候选物品，并计算用户 u 对候选物品 i 的兴趣分数</li>
+</ol>
+<figure class="highlight latex"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs latex">p(u, i) = <span class="hljs-keyword">\sum</span><span class="hljs-built_in">_</span>&#123;v <span class="hljs-keyword">\in</span> S<span class="hljs-built_in">_</span>u <span class="hljs-keyword">\cap</span> N(i)&#125; w<span class="hljs-built_in">_</span>&#123;uv&#125; <span class="hljs-keyword">\cdot</span> r<span class="hljs-built_in">_</span>&#123;vi&#125;<br></code></pre></td></tr></table></figure>
+<p>$S_u$是与用户 u 最相似的K个用户集合，$N(i)$是对物品 i 有过行为的用户集合，$w_{uv}$是用户相似度，$r_{vi}$表示用户对物品的兴趣强度（可以是简单的1，也可以根据评分、交互时间等设置权重）。</p>
+<p>最终，系统对所有候选物品按兴趣分数排序，选择Top-N物品作为UserCF通道的推荐结果。这种“<strong>相似用户扩展</strong>”的方式既保证了推荐的个性化质量，又避免了对全量物品的无效计算。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>推荐系统学习(一)：召回-协同过滤-UserCF</div>
+      <div>https://whosefrienda.github.io/2025/12/11/推荐系统学习-一-：召回-协同过滤-UserCF/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>WhosefriendA</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年12月11日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/10/21/ubuntu%E5%88%9B%E5%BB%BA%E5%BA%94%E7%94%A8%E7%9A%84%E5%BF%AB%E6%8D%B7%E6%96%B9%E5%BC%8F/" title="ubuntu创建应用的快捷方式">
+                        <span class="hidden-mobile">ubuntu创建应用的快捷方式</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

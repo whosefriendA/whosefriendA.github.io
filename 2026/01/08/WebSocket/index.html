@@ -19,25 +19,23 @@
   <meta name="author" content="WhosefriendA">
   <meta name="keywords" content="">
   
-    <meta name="description" content="概念pCTR :预估点击率pCVR :预估转化率 1.ecpm : effective Cost Per Mille，有效的千次展示成本预估点击率点击出价pCTR (predicted Click-Through Rate)：模型预估的、这个用户看到这个广告后，点击它的概率。这部分的技术和推荐系统的CTR预估模型几乎完全一样，都使用LR、GBDT、DeepFM、WDL等深度学习模型。模型输入的特征">
+    <meta name="description" content="如果你像我一样，对 HTTP&#x2F;1&#x2F;2&#x2F;3 的演进和 gRPC 的四种调用模式很了解，但谈起 websocket 时认知止于全双工通信，那么 WebSocket 值得我们用同样的视角，重新审视一番。 参照对比：它与 HTTP 有何不同？和另一个全双工的 gRPC 双向流又有什么区别？1. 对比 HTTP&#x2F;1, 2, 3将 HTTP 简单地描述为“一问一答”不够">
 <meta property="og:type" content="article">
-<meta property="og:title" content="初见广告系统-常见概念及单次展示全流程">
-<meta property="og:url" content="https://whosefrienda.github.io/2026/01/08/%E5%88%9D%E8%A7%81%E5%B9%BF%E5%91%8A%E7%B3%BB%E7%BB%9F-%E5%B8%B8%E8%A7%81%E6%A6%82%E5%BF%B5%E5%8F%8A%E5%8D%95%E6%AC%A1%E5%B1%95%E7%A4%BA%E5%85%A8%E6%B5%81%E7%A8%8B/index.html">
+<meta property="og:title" content="再探 WebSocket -不止于全双工">
+<meta property="og:url" content="https://whosefrienda.github.io/2026/01/08/WebSocket/index.html">
 <meta property="og:site_name" content="WhosefriendA&#39;s Blog">
-<meta property="og:description" content="概念pCTR :预估点击率pCVR :预估转化率 1.ecpm : effective Cost Per Mille，有效的千次展示成本预估点击率点击出价pCTR (predicted Click-Through Rate)：模型预估的、这个用户看到这个广告后，点击它的概率。这部分的技术和推荐系统的CTR预估模型几乎完全一样，都使用LR、GBDT、DeepFM、WDL等深度学习模型。模型输入的特征">
+<meta property="og:description" content="如果你像我一样，对 HTTP&#x2F;1&#x2F;2&#x2F;3 的演进和 gRPC 的四种调用模式很了解，但谈起 websocket 时认知止于全双工通信，那么 WebSocket 值得我们用同样的视角，重新审视一番。 参照对比：它与 HTTP 有何不同？和另一个全双工的 gRPC 双向流又有什么区别？1. 对比 HTTP&#x2F;1, 2, 3将 HTTP 简单地描述为“一问一答”不够">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://whosefrienda.github.io/image.png">
-<meta property="article:published_time" content="2026-01-08T02:04:04.000Z">
-<meta property="article:modified_time" content="2026-01-08T02:14:40.206Z">
+<meta property="article:published_time" content="2026-01-08T09:29:08.000Z">
+<meta property="article:modified_time" content="2026-01-08T11:38:09.519Z">
 <meta property="article:author" content="WhosefriendA">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://whosefrienda.github.io/image.png">
   
   
     <meta name="referrer" content="no-referrer-when-downgrade">
   
   
-  <title>初见广告系统-常见概念及单次展示全流程 - WhosefriendA&#39;s Blog</title>
+  <title>再探 WebSocket -不止于全双工 - WhosefriendA&#39;s Blog</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -203,7 +201,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="初见广告系统-常见概念及单次展示全流程"></span>
+            <span id="subtitle" data-typed-text="再探 WebSocket -不止于全双工"></span>
           
         </div>
 
@@ -214,8 +212,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2026-01-08 10:04" pubdate>
-          2026年1月8日 上午
+        <time datetime="2026-01-08 17:29" pubdate>
+          2026年1月8日 下午
         </time>
       </span>
     
@@ -226,7 +224,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.6k 字
+          1.3k 字
         
       </span>
     
@@ -237,7 +235,7 @@
         
         
         
-          13 分钟
+          12 分钟
         
       </span>
     
@@ -283,79 +281,62 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">初见广告系统-常见概念及单次展示全流程</h1>
+            <h1 id="seo-header">再探 WebSocket -不止于全双工</h1>
             
             
               <div class="markdown-body">
                 
-                <h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><p>pCTR :预估点击率<br>pCVR :预估转化率</p>
-<h3 id="1-ecpm-effective-Cost-Per-Mille，有效的千次展示成本"><a href="#1-ecpm-effective-Cost-Per-Mille，有效的千次展示成本" class="headerlink" title="1.ecpm : effective Cost Per Mille，有效的千次展示成本"></a>1.ecpm : effective Cost Per Mille，有效的千次展示成本</h3><p>预估点击率点击出价<br><strong>pCTR</strong> (predicted Click-Through Rate)：模型预估的、这个用户看到这个广告后，点击它的概率。<br>这部分的技术和推荐系统的CTR预估模型几乎完全一样，都使用LR、GBDT、DeepFM、WDL等深度学习模型。<br>模型输入的特征就是用户、广告、上下文的所有信息。<br><strong>Bid_cpc</strong> (Cost Per Click Bid)：广告主为每一次点击愿意支付的最高价格。这是由广告主设定的商业出价。<br>含义：它衡量的是，如果这个广告被展示1000次，平台<strong>预期</strong>能获得多少收入。广告系统会选择eCPM最高的广告进行展示，因为这同时兼顾了<strong>用户兴趣 (pCTR)</strong> 和 <strong>商业价值 (Bid)</strong>。一个用户再喜欢某个广告（pCTR高），如果广告主不出钱（Bid低），eCPM也会很低，广告也排不上去。</p>
-<h3 id="2-RTA"><a href="#2-RTA" class="headerlink" title="2.RTA"></a>2.RTA</h3><p>RTA (Real-time API) 是一种技术接口，它允许<strong>广告主</strong>在广告平台进行<strong>实时竞价</strong>的瞬间，利用其<strong>第一方私有数据</strong>参与投放决策。本质上，是广告平台在最终排序前，向广告主服务器发起的一次实时问询，赋予广告主对单次曝光的“一票否决权”和“动态调价权”。<br>作用：<strong>利用第一方数据</strong><br><strong>精细化用户生命周期管理</strong><br><strong>数据安全与隐私保护</strong><br><strong>实时预算与风控</strong></p>
-<h3 id="3-RTB"><a href="#3-RTB" class="headerlink" title="3. RTB"></a>3. RTB</h3><h3 id="4-头部竞价"><a href="#4-头部竞价" class="headerlink" title="4. 头部竞价"></a>4. 头部竞价</h3><p>传统媒体变现采用“<strong>瀑布流</strong>”(Waterfall)模式，即按预设顺序依次请求广告网络，一旦某个网络返回广告就成交。这种模式的弊端是：排在后面的广告网络即使出价更高，也可能没有机会参与竞价，导致媒体收益损失。<br>而头部竞价则是：</p>
+                <p>如果你像我一样，对 HTTP&#x2F;1&#x2F;2&#x2F;3 的演进和 gRPC 的四种调用模式很了解，但谈起 websocket 时认知止于全双工通信，那么 WebSocket 值得我们用同样的视角，重新审视一番。</p>
+<h2 id="参照对比：它与-HTTP-有何不同？和另一个全双工的-gRPC-双向流又有什么区别？"><a href="#参照对比：它与-HTTP-有何不同？和另一个全双工的-gRPC-双向流又有什么区别？" class="headerlink" title="参照对比：它与 HTTP 有何不同？和另一个全双工的 gRPC 双向流又有什么区别？"></a>参照对比：它与 HTTP 有何不同？和另一个全双工的 gRPC 双向流又有什么区别？</h2><h3 id="1-对比-HTTP-1-2-3"><a href="#1-对比-HTTP-1-2-3" class="headerlink" title="1. 对比 HTTP&#x2F;1, 2, 3"></a>1. 对比 HTTP&#x2F;1, 2, 3</h3><p>将 HTTP 简单地描述为“一问一答”不够准确。<br>从基于 HTTP&#x2F;1.1 的 SSE (Server-Sent Events) 到 HTTP&#x2F;2 和 HTTP&#x2F;3 的原生多路复用流，HTTP 已经发展出强大的流式处理能力。</p>
+<p>这些流与 WebSocket 的核心区别在于它们的通信模型：</p>
+<ul>
+<li><p><strong>HTTP 的流是“事务性”的：</strong></p>
+<ul>
+<li>SSE 提供了一个高效的服务器到客户端的单向流，非常适合状态更新和通知推送。但它就像一个广播，客户端无法通过同一连接回话。</li>
+<li>HTTP&#x2F;2 和 HTTP&#x2F;3 的流虽然是双向的，并且可以流式传输数据，但每个流的生命周期和语义都与一次**“请求-响应”**事务绑定。客户端发起请求，服务器给予响应。服务器不能在没有客户端请求的情况下，主动发起一个流来推送消息。</li>
+</ul>
+</li>
+<li><p><strong>WebSocket 的流是“对话式”的：</strong></p>
+<ul>
+<li>WebSocket 在通过 HTTP 握手建立连接后，就完全脱离了 HTTP 的事务模型。整个连接变成了一条持久、对称、全双工的消息通道。</li>
+<li>双方地位完全平等，没有“请求方”和“响应方”之分。任何一方都可以在任何时候主动向对方发送消息。</li>
+</ul>
+</li>
+</ul>
+<h3 id="2-对比gRPC-双向流"><a href="#2-对比gRPC-双向流" class="headerlink" title="2. 对比gRPC 双向流"></a>2. 对比gRPC 双向流</h3><p>gRPC 的双向流和 WebSocket 都是全双工通信，但它们的抽象层次和设计哲学截然不同。我曾经也使用过 RPC 双向流以及 webtransport 来做协同画布这种业务，和使用websocket还是很不同的</p>
+<ul>
+<li><strong>gRPC 双向流:</strong> 每一步都是按照预先定义好的proto。这是一个有上下文、有强类型约束的结构化对话。gRPC 帮你处理了所有的序列化和规则校验，你只用专注于业务逻辑。</li>
+<li><strong>WebSocket:</strong> 不关心通信的内容和格式，只保证二进制数据能清晰、完整地传到对方。你想在上面实现自己的业务逻辑，需要自己定义消息格式（比如用 JSON 或 Protobuf）并维护状态。它提供的是一个无结构、无上下文的通用消息通道。</li>
+</ul>
+<h2 id="WebSocket-的语法、语义与数据格式"><a href="#WebSocket-的语法、语义与数据格式" class="headerlink" title="WebSocket 的语法、语义与数据格式"></a>WebSocket 的语法、语义与数据格式</h2><ul>
+<li><p><strong>语义 (Semantics):</strong> 如前所述，是**面向消息（Message-Oriented）**的。连接一旦建立，通信单元就是一个个独立的“消息”，没有请求和响应的内在关联。</p>
+</li>
+<li><p><strong>语法 (Syntax):</strong> WebSocket 的语法单元是**“帧”（Frame）**。这正是它高效的秘密所在。一次网络传输就是一个或多个帧的组合。一个帧由两部分构成：</p>
+<ul>
+<li>一个二进制帧头（2-14 字节）</li>
+<li>数据载荷（Payload）</li>
+</ul>
+<p>这个二进制帧头里只包含了最基本的信息：这是不是消息的最后一帧（Fin）？是文本（<code>OpCode=1</code>）还是二进制（<code>OpCode=2</code>）？数据有多长？为了安全，从客户端发往服务器的帧，其载荷还会被一个 4 字节的随机密钥进行简单的异或（XOR）“掩码”处理。</p>
+</li>
+<li><p><strong>数据格式 (Data Format):</strong> 这是最关键的一点。WebSocket 帧的帧头 在网络上传输时，就是一个连续的二进制字节流。相比 HTTP&#x2F;1.1 那冗长的纯文本头部，WebSocket 的协议开销（Protocol Overhead）几乎可以忽略不计。每次通信只需付出几个字节的帧头代价，而不是上百字节的 HTTP 头部。而在数据本体方面，websocket是不感知的，可以传文本，也可以传二进制。</p>
+</li>
+</ul>
+<h2 id="对标-HTTPS-的WSS加密"><a href="#对标-HTTPS-的WSS加密" class="headerlink" title="对标 HTTPS 的WSS加密"></a>对标 HTTPS 的WSS加密</h2><p>WSS 的本质是 WebSocket over TLS，与 HTTPS (HTTP over TLS) 的原理完全相同。</p>
+<p>当你使用 <code>wss://</code> 协议头（而非 <code>ws://</code>）时，整个通信流程会增加一个 TLS 安全层：</p>
 <ol>
-<li><strong>并行询价：</strong> 在向主广告交易平台(Ad Exchange)发送请求前，媒体网站&#x2F;App的前端代码（Header部分）会同时向多个广告需求方（SSP&#x2F;DSP）发起竞价请求。</li>
-<li><strong>收集出价：</strong> 在一个极短的超时时间内（如200ms），收集所有参与方的出价。</li>
-<li><strong>传递胜者：</strong> 将最高出价作为“底价”或一个特殊的竞价参数，传递给主广告交易平台，让这个“场外最高价”与场内广告进行最终PK。</li>
+<li>在 TCP 连接建立后，应用数据传输之前，客户端和服务器会进行一次完整的 TLS 握手。</li>
+<li>这次握手会验证服务器的证书、协商加密算法，并生成一个临时的对称会话密钥。</li>
+<li>一旦 TLS 握手成功，一条加密通道就建立起来了。</li>
+<li>之后，无论是 WebSocket 的 HTTP 升级握手请求，还是后续的所有 WebSocket 数据帧，都会先经过 TLS 层的加密，然后再在网络上传输。</li>
 </ol>
-<h3 id="5-DSP-DMP-CMP-SSP等核心组件"><a href="#5-DSP-DMP-CMP-SSP等核心组件" class="headerlink" title="5.DSP,DMP,CMP,SSP等核心组件"></a>5.DSP,DMP,CMP,SSP等核心组件</h3><p><img src="/image.png" srcset="/img/loading.gif" lazyload alt="alt text"></p>
-<p><strong>0. 头部竞价</strong><br><strong>1. 广告请求 (Ad Request)</strong></p>
+<h2 id="WebSocket-Protobuf"><a href="#WebSocket-Protobuf" class="headerlink" title="WebSocket + Protobuf"></a>WebSocket + Protobuf</h2><p><strong>Q:</strong> WebSocket 既然是二进制传输，但它又没有像 gRPC 那样的 IDL，如何处理复杂的结构化数据？</p>
+<p><strong>A:</strong> WebSocket 协议本身不负责定义载荷的内部结构，它只提供高效的传输通道。</p>
+<p>这种需求很符合 Protobuf </p>
 <ul>
-<li><strong>触发：</strong> 用户设备（App&#x2F;网页）即将展示广告位时。</li>
-<li><strong>任务：</strong> 向广告平台发送请求，携带关键上下文信息。</li>
-<li><strong>关键信息：</strong>- &#x3D;<strong>用户 (User)：</strong> 用户画像标签（年龄、性别、兴趣）、设备ID。<ul>
-<li><strong>环境 (Context)：</strong> 时间、IP地址（地理位置）、网络类型、当前浏览内容。</li>
-<li><strong>广告位 (Placement)：</strong> 广告位ID、尺寸、类型（如信息流、开屏）。</li>
+<li><strong>Protobuf 的角色:</strong> 通过 <code>.proto</code> 文件定义数据结构，并能将内存中的对象（Struct）序列化成极其紧凑的二进制字节流。</li>
+<li><strong>WebSocket 的角色:</strong> 接过 Protobuf 打包好的二进制包裹（<code>[]byte</code>），把它放进自己的标准快递箱（二进制帧），然后以极低的成本快速送到目的地。</li>
 </ul>
-</li>
-</ul>
-<p><strong>2. 检索与定向 (Retrieval &amp; Targeting)</strong></p>
-<ul>
-<li><strong>任务：</strong> 从海量广告库中，快速筛选出符合本次请求条件的<strong>候选广告集</strong>（百&#x2F;千量级）。类似推荐系统的“召回”。</li>
-<li><strong>核心技术&#x2F;策略 (定向方式)：</strong>- <strong>基础定向：</strong> 人口属性、地理位置、设备等。<ul>
-<li><strong>兴趣&#x2F;行为定向：</strong> 基于用户历史行为（点击、浏览、搜索）匹配广告。</li>
-<li><strong>重定向 (Retargeting)：</strong> 针对访问过广告主网站或App的用户进行再次营销。</li>
-<li><strong>人群扩展 (Lookalike)：</strong> 寻找与广告主已有高价值用户相似的人群。</li>
-</ul>
-</li>
-</ul>
-<p><strong>3.RTA（可选）</strong><br><strong>4. 排序 (Ranking)</strong></p>
-<ul>
-<li><strong>任务：</strong> 对候选广告集进行精准打分和排序，选出最优广告。这是广告系统的技术<strong>核心</strong>。<br>  <strong>核心公式：eCPM:</strong></li>
-<li>公式解析：** pCTR** (预估点击率)： 通过机器学习模型（如DeepFM）预测“该用户点击该广告”的概率。<strong>衡量用户兴趣</strong>。<ul>
-<li><strong>Bid_cpc (点击出价)：</strong> 广告主为单次点击愿意支付的最高价格。<strong>衡量商业价值</strong>。</li>
-</ul>
-</li>
-<li><strong>排序</strong>逻辑**：** 系统按 eCPM 从高到低排序，eCPM 最高的广告胜出。这确保了<strong>用户兴趣</strong>和<strong>商业价值</strong>的综合最优。</li>
-<li>可选策略 1：<strong>智能出价 <strong>(oCPX &#x2F; Smart Bidding)</strong>- <strong>工作流： 广告主不再设定固定的<code>Bid</code>，而是设定一个转化目标成本（如CPA）。平台通过</strong>pCVR（预估转化率）模型</strong>自动反推出价。<ul>
-<li><strong>公式演变：****<code>eCPM = pCTR × (pCVR × CPA_target) × 1000</code></strong>(以oCPC为例)</li>
-<li><strong>作用：</strong> 投放目标从“买量”转向“买效果”，将优化目标与广告主业务目标对齐，是目前的主流投放方式。</li>
-</ul>
-</li>
-<li>可选策略 2：动态创意优化 <strong>(DCO)</strong> - Dynamic Creative Optimization - 工作流： 系统不再投放一个固定的“成品”广告，而是拥有一个“创意元素库”（如多张图片、多个标题、多个按钮文案）。在排序时，系统会实时组合这些元素，并预估<strong>哪个组合的pCTR最高</strong>，然后用该组合参与竞价。<ul>
-<li><strong>作用：</strong> 实现“千人千面”的广告创意，极大提升点击率和用户体验。</li>
-</ul>
-</li>
-</ul>
-<p><strong>5. 竞价与计费 (Auction &amp; Pricing)</strong></p>
-<ul>
-<li><strong>任务：</strong> 确定最终胜出的广告及其需要支付的费用。</li>
-<li><strong>核心机制：GSP (广义第二价格拍卖)</strong>- <strong>竞价胜者：</strong> eCPM 排名第一的广告获得展示机会。<ul>
-<li><strong>计费规则：胜者需要支付的实际点击价格(Actual CPC)，是</strong>刚好能以微弱优势战胜第二名eCPM所需要的价格。<br>  <strong><code>Actual_CPC_1 = (eCPM_2 / pCTR_1) + 0.01</code></strong></li>
-<li><strong>目的：</strong> 鼓励广告主写真实出价，维持系统稳定性。</li>
-</ul>
-</li>
-<li>可选其他策略：第一价格拍卖</li>
-</ul>
-<p><strong>6. 展示与反馈 (Display &amp; Feedback Loop)</strong></p>
-<ul>
-<li><strong>任务：</strong> 将胜出的广告返回给用户设备进行展示，并收集后续行为数据，形成闭环。</li>
-<li><strong>行为记录：</strong>- <strong>展示 (Impression)：</strong> 广告被成功加载。<ul>
-<li><strong>点击 (Click)：</strong> 用户点击广告。</li>
-<li><strong>转化 (Conversion)：</strong> 用户完成广告主期望的后续行为（如下载、注册、购买）。</li>
-</ul>
-</li>
-<li><strong>闭环作用：</strong> 收集到的真实数据（展示、点击、转化）将作为<strong>训练样本</strong>，用于迭代和优化 <strong>pCTR&#x2F;pCVR</strong>（预估转化率）等机器学习模型，使预估越来越准，从而提升整个系统的效率和收入。</li>
-</ul>
+<p>这套组合拳对于在线游戏、金融行情推送、实时协作应用等场景非常适用。</p>
 
                 
               </div>
@@ -373,8 +354,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>初见广告系统-常见概念及单次展示全流程</div>
-      <div>https://whosefrienda.github.io/2026/01/08/初见广告系统-常见概念及单次展示全流程/</div>
+      <div>再探 WebSocket -不止于全双工</div>
+      <div>https://whosefrienda.github.io/2026/01/08/WebSocket/</div>
     </div>
     <div class="license-meta">
       
@@ -418,18 +399,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2026/01/08/WebSocket/" title="再探 WebSocket -不止于全双工">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">再探 WebSocket -不止于全双工</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2025/12/15/Elasticsearch%E5%85%A5%E9%97%A8%E4%BD%BF%E7%94%A8/" title="Elasticsearch入门使用">
-                        <span class="hidden-mobile">Elasticsearch入门使用</span>
+                      <a href="/2026/01/08/%E5%88%9D%E8%A7%81%E5%B9%BF%E5%91%8A%E7%B3%BB%E7%BB%9F-%E5%B8%B8%E8%A7%81%E6%A6%82%E5%BF%B5%E5%8F%8A%E5%8D%95%E6%AC%A1%E5%B1%95%E7%A4%BA%E5%85%A8%E6%B5%81%E7%A8%8B/" title="初见广告系统-常见概念及单次展示全流程">
+                        <span class="hidden-mobile">初见广告系统-常见概念及单次展示全流程</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>

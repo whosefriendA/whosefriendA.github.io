@@ -19,15 +19,19 @@
   <meta name="author" content="WhosefriendA">
   <meta name="keywords" content="">
   
-    <meta property="og:type" content="article">
+    <meta name="description" content="概念pCTR :预估点击率pCVR :预估转化率 1.ecpm : effective Cost Per Mille，有效的千次展示成本预估点击率点击出价pCTR (predicted Click-Through Rate)：模型预估的、这个用户看到这个广告后，点击它的概率。这部分的技术和推荐系统的CTR预估模型几乎完全一样，都使用LR、GBDT、DeepFM、WDL等深度学习模型。模型输入的特征">
+<meta property="og:type" content="article">
 <meta property="og:title" content="初见广告系统-常见概念及单次展示全流程">
 <meta property="og:url" content="https://whosefrienda.github.io/2026/01/08/%E5%88%9D%E8%A7%81%E5%B9%BF%E5%91%8A%E7%B3%BB%E7%BB%9F-%E5%B8%B8%E8%A7%81%E6%A6%82%E5%BF%B5%E5%8F%8A%E5%8D%95%E6%AC%A1%E5%B1%95%E7%A4%BA%E5%85%A8%E6%B5%81%E7%A8%8B/index.html">
 <meta property="og:site_name" content="WhosefriendA&#39;s Blog">
+<meta property="og:description" content="概念pCTR :预估点击率pCVR :预估转化率 1.ecpm : effective Cost Per Mille，有效的千次展示成本预估点击率点击出价pCTR (predicted Click-Through Rate)：模型预估的、这个用户看到这个广告后，点击它的概率。这部分的技术和推荐系统的CTR预估模型几乎完全一样，都使用LR、GBDT、DeepFM、WDL等深度学习模型。模型输入的特征">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://whosefrienda.github.io/image.png">
 <meta property="article:published_time" content="2026-01-08T02:04:04.000Z">
-<meta property="article:modified_time" content="2026-01-08T02:04:04.448Z">
+<meta property="article:modified_time" content="2026-01-08T02:14:40.206Z">
 <meta property="article:author" content="WhosefriendA">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://whosefrienda.github.io/image.png">
   
   
     <meta name="referrer" content="no-referrer-when-downgrade">
@@ -222,7 +226,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          0 字
+          1.6k 字
         
       </span>
     
@@ -233,7 +237,7 @@
         
         
         
-          1 分钟
+          13 分钟
         
       </span>
     
@@ -284,7 +288,75 @@
             
               <div class="markdown-body">
                 
-                
+                <h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><p>pCTR :预估点击率<br>pCVR :预估转化率</p>
+<h3 id="1-ecpm-effective-Cost-Per-Mille，有效的千次展示成本"><a href="#1-ecpm-effective-Cost-Per-Mille，有效的千次展示成本" class="headerlink" title="1.ecpm : effective Cost Per Mille，有效的千次展示成本"></a>1.ecpm : effective Cost Per Mille，有效的千次展示成本</h3><p>预估点击率点击出价<br><strong>pCTR</strong> (predicted Click-Through Rate)：模型预估的、这个用户看到这个广告后，点击它的概率。<br>这部分的技术和推荐系统的CTR预估模型几乎完全一样，都使用LR、GBDT、DeepFM、WDL等深度学习模型。<br>模型输入的特征就是用户、广告、上下文的所有信息。<br><strong>Bid_cpc</strong> (Cost Per Click Bid)：广告主为每一次点击愿意支付的最高价格。这是由广告主设定的商业出价。<br>含义：它衡量的是，如果这个广告被展示1000次，平台<strong>预期</strong>能获得多少收入。广告系统会选择eCPM最高的广告进行展示，因为这同时兼顾了<strong>用户兴趣 (pCTR)</strong> 和 <strong>商业价值 (Bid)</strong>。一个用户再喜欢某个广告（pCTR高），如果广告主不出钱（Bid低），eCPM也会很低，广告也排不上去。</p>
+<h3 id="2-RTA"><a href="#2-RTA" class="headerlink" title="2.RTA"></a>2.RTA</h3><p>RTA (Real-time API) 是一种技术接口，它允许<strong>广告主</strong>在广告平台进行<strong>实时竞价</strong>的瞬间，利用其<strong>第一方私有数据</strong>参与投放决策。本质上，是广告平台在最终排序前，向广告主服务器发起的一次实时问询，赋予广告主对单次曝光的“一票否决权”和“动态调价权”。<br>作用：<strong>利用第一方数据</strong><br><strong>精细化用户生命周期管理</strong><br><strong>数据安全与隐私保护</strong><br><strong>实时预算与风控</strong></p>
+<h3 id="3-RTB"><a href="#3-RTB" class="headerlink" title="3. RTB"></a>3. RTB</h3><h3 id="4-头部竞价"><a href="#4-头部竞价" class="headerlink" title="4. 头部竞价"></a>4. 头部竞价</h3><p>传统媒体变现采用“<strong>瀑布流</strong>”(Waterfall)模式，即按预设顺序依次请求广告网络，一旦某个网络返回广告就成交。这种模式的弊端是：排在后面的广告网络即使出价更高，也可能没有机会参与竞价，导致媒体收益损失。<br>而头部竞价则是：</p>
+<ol>
+<li><strong>并行询价：</strong> 在向主广告交易平台(Ad Exchange)发送请求前，媒体网站&#x2F;App的前端代码（Header部分）会同时向多个广告需求方（SSP&#x2F;DSP）发起竞价请求。</li>
+<li><strong>收集出价：</strong> 在一个极短的超时时间内（如200ms），收集所有参与方的出价。</li>
+<li><strong>传递胜者：</strong> 将最高出价作为“底价”或一个特殊的竞价参数，传递给主广告交易平台，让这个“场外最高价”与场内广告进行最终PK。</li>
+</ol>
+<h3 id="5-DSP-DMP-CMP-SSP等核心组件"><a href="#5-DSP-DMP-CMP-SSP等核心组件" class="headerlink" title="5.DSP,DMP,CMP,SSP等核心组件"></a>5.DSP,DMP,CMP,SSP等核心组件</h3><p><img src="/image.png" srcset="/img/loading.gif" lazyload alt="alt text"></p>
+<p><strong>0. 头部竞价</strong><br><strong>1. 广告请求 (Ad Request)</strong></p>
+<ul>
+<li><strong>触发：</strong> 用户设备（App&#x2F;网页）即将展示广告位时。</li>
+<li><strong>任务：</strong> 向广告平台发送请求，携带关键上下文信息。</li>
+<li><strong>关键信息：</strong>- &#x3D;<strong>用户 (User)：</strong> 用户画像标签（年龄、性别、兴趣）、设备ID。<ul>
+<li><strong>环境 (Context)：</strong> 时间、IP地址（地理位置）、网络类型、当前浏览内容。</li>
+<li><strong>广告位 (Placement)：</strong> 广告位ID、尺寸、类型（如信息流、开屏）。</li>
+</ul>
+</li>
+</ul>
+<p><strong>2. 检索与定向 (Retrieval &amp; Targeting)</strong></p>
+<ul>
+<li><strong>任务：</strong> 从海量广告库中，快速筛选出符合本次请求条件的<strong>候选广告集</strong>（百&#x2F;千量级）。类似推荐系统的“召回”。</li>
+<li><strong>核心技术&#x2F;策略 (定向方式)：</strong>- <strong>基础定向：</strong> 人口属性、地理位置、设备等。<ul>
+<li><strong>兴趣&#x2F;行为定向：</strong> 基于用户历史行为（点击、浏览、搜索）匹配广告。</li>
+<li><strong>重定向 (Retargeting)：</strong> 针对访问过广告主网站或App的用户进行再次营销。</li>
+<li><strong>人群扩展 (Lookalike)：</strong> 寻找与广告主已有高价值用户相似的人群。</li>
+</ul>
+</li>
+</ul>
+<p><strong>3.RTA（可选）</strong><br><strong>4. 排序 (Ranking)</strong></p>
+<ul>
+<li><strong>任务：</strong> 对候选广告集进行精准打分和排序，选出最优广告。这是广告系统的技术<strong>核心</strong>。<br>  <strong>核心公式：eCPM:</strong></li>
+<li>公式解析：** pCTR** (预估点击率)： 通过机器学习模型（如DeepFM）预测“该用户点击该广告”的概率。<strong>衡量用户兴趣</strong>。<ul>
+<li><strong>Bid_cpc (点击出价)：</strong> 广告主为单次点击愿意支付的最高价格。<strong>衡量商业价值</strong>。</li>
+</ul>
+</li>
+<li><strong>排序</strong>逻辑**：** 系统按 eCPM 从高到低排序，eCPM 最高的广告胜出。这确保了<strong>用户兴趣</strong>和<strong>商业价值</strong>的综合最优。</li>
+<li>可选策略 1：<strong>智能出价 <strong>(oCPX &#x2F; Smart Bidding)</strong>- <strong>工作流： 广告主不再设定固定的<code>Bid</code>，而是设定一个转化目标成本（如CPA）。平台通过</strong>pCVR（预估转化率）模型</strong>自动反推出价。<ul>
+<li><strong>公式演变：****<code>eCPM = pCTR × (pCVR × CPA_target) × 1000</code></strong>(以oCPC为例)</li>
+<li><strong>作用：</strong> 投放目标从“买量”转向“买效果”，将优化目标与广告主业务目标对齐，是目前的主流投放方式。</li>
+</ul>
+</li>
+<li>可选策略 2：动态创意优化 <strong>(DCO)</strong> - Dynamic Creative Optimization - 工作流： 系统不再投放一个固定的“成品”广告，而是拥有一个“创意元素库”（如多张图片、多个标题、多个按钮文案）。在排序时，系统会实时组合这些元素，并预估<strong>哪个组合的pCTR最高</strong>，然后用该组合参与竞价。<ul>
+<li><strong>作用：</strong> 实现“千人千面”的广告创意，极大提升点击率和用户体验。</li>
+</ul>
+</li>
+</ul>
+<p><strong>5. 竞价与计费 (Auction &amp; Pricing)</strong></p>
+<ul>
+<li><strong>任务：</strong> 确定最终胜出的广告及其需要支付的费用。</li>
+<li><strong>核心机制：GSP (广义第二价格拍卖)</strong>- <strong>竞价胜者：</strong> eCPM 排名第一的广告获得展示机会。<ul>
+<li><strong>计费规则：胜者需要支付的实际点击价格(Actual CPC)，是</strong>刚好能以微弱优势战胜第二名eCPM所需要的价格。<br>  <strong><code>Actual_CPC_1 = (eCPM_2 / pCTR_1) + 0.01</code></strong></li>
+<li><strong>目的：</strong> 鼓励广告主写真实出价，维持系统稳定性。</li>
+</ul>
+</li>
+<li>可选其他策略：第一价格拍卖</li>
+</ul>
+<p><strong>6. 展示与反馈 (Display &amp; Feedback Loop)</strong></p>
+<ul>
+<li><strong>任务：</strong> 将胜出的广告返回给用户设备进行展示，并收集后续行为数据，形成闭环。</li>
+<li><strong>行为记录：</strong>- <strong>展示 (Impression)：</strong> 广告被成功加载。<ul>
+<li><strong>点击 (Click)：</strong> 用户点击广告。</li>
+<li><strong>转化 (Conversion)：</strong> 用户完成广告主期望的后续行为（如下载、注册、购买）。</li>
+</ul>
+</li>
+<li><strong>闭环作用：</strong> 收集到的真实数据（展示、点击、转化）将作为<strong>训练样本</strong>，用于迭代和优化 <strong>pCTR&#x2F;pCVR</strong>（预估转化率）等机器学习模型，使预估越来越准，从而提升整个系统的效率和收入。</li>
+</ul>
+
                 
               </div>
             

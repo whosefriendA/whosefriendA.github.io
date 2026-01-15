@@ -19,13 +19,15 @@
   <meta name="author" content="WhosefriendA">
   <meta name="keywords" content="">
   
-    <meta property="og:type" content="article">
+    <meta name="description" content="基于物品的协同过滤 (ItemCF)核心思想ItemCF 的核心假设是：用户的兴趣具有连贯性，喜欢某个物品的用户，往往也会对与该物品相似的其他物品感兴趣。例如，一个购买了T恤的用户，很可能也会喜欢与这件T恤相似的夹克。算法的目标是回答“和你喜欢的物品相似的还有什么”。  第一步：物品相似度计算余弦相似度 (Cosine Similarity)当只有用户的交互行为（如点击、购买，即隐式反馈）而没有具">
+<meta property="og:type" content="article">
 <meta property="og:title" content="推荐系统学习(二)：召回-协同过滤-ItemCF">
 <meta property="og:url" content="https://whosefrienda.github.io/2026/01/15/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0-%E4%BA%8C-%EF%BC%9A%E5%8F%AC%E5%9B%9E-%E5%8D%8F%E5%90%8C%E8%BF%87%E6%BB%A4-ItemCF/index.html">
 <meta property="og:site_name" content="WhosefriendA&#39;s Blog">
+<meta property="og:description" content="基于物品的协同过滤 (ItemCF)核心思想ItemCF 的核心假设是：用户的兴趣具有连贯性，喜欢某个物品的用户，往往也会对与该物品相似的其他物品感兴趣。例如，一个购买了T恤的用户，很可能也会喜欢与这件T恤相似的夹克。算法的目标是回答“和你喜欢的物品相似的还有什么”。  第一步：物品相似度计算余弦相似度 (Cosine Similarity)当只有用户的交互行为（如点击、购买，即隐式反馈）而没有具">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-01-15T11:14:43.000Z">
-<meta property="article:modified_time" content="2026-01-15T11:14:43.519Z">
+<meta property="article:modified_time" content="2026-01-15T11:17:27.939Z">
 <meta property="article:author" content="WhosefriendA">
 <meta name="twitter:card" content="summary_large_image">
   
@@ -222,7 +224,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          0 字
+          1.4k 字
         
       </span>
     
@@ -233,7 +235,7 @@
         
         
         
-          1 分钟
+          12 分钟
         
       </span>
     
@@ -284,7 +286,36 @@
             
               <div class="markdown-body">
                 
-                
+                <h3 id="基于物品的协同过滤-ItemCF"><a href="#基于物品的协同过滤-ItemCF" class="headerlink" title="基于物品的协同过滤 (ItemCF)"></a>基于物品的协同过滤 (ItemCF)</h3><p><strong>核心思想</strong><br>ItemCF 的核心假设是：用户的兴趣具有连贯性，喜欢某个物品的用户，往往也会对与该物品相似的其他物品感兴趣。例如，一个购买了T恤的用户，很可能也会喜欢与这件T恤相似的夹克。算法的目标是回答“和你喜欢的物品相似的还有什么”。</p>
+<hr>
+<h4 id="第一步：物品相似度计算"><a href="#第一步：物品相似度计算" class="headerlink" title="第一步：物品相似度计算"></a>第一步：物品相似度计算</h4><h5 id="余弦相似度-Cosine-Similarity"><a href="#余弦相似度-Cosine-Similarity" class="headerlink" title="余弦相似度 (Cosine Similarity)"></a>余弦相似度 (Cosine Similarity)</h5><p>当只有用户的交互行为（如点击、购买，即隐式反馈）而没有具体评分时，常使用余弦相似度。它通过计算两个物品的共同用户数，并进行标准化，以消除热门物品因用户数多而带来的影响。</p>
+<figure class="highlight latex"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs latex">w<span class="hljs-built_in">_</span>&#123;ij&#125; = <span class="hljs-keyword">\frac</span>&#123;|N(i) <span class="hljs-keyword">\cap</span> N(j)|&#125;&#123;<span class="hljs-keyword">\sqrt</span>&#123;|N(i)|<span class="hljs-keyword">\cdot</span>|N(j)|&#125;&#125;<br></code></pre></td></tr></table></figure>
+<p>其中，<code>N(i)</code> 是与物品 <code>i</code> 有过交互的用户集合，<code>|N(i) ∩ N(j)|</code> 是物品 <code>i</code> 和 <code>j</code> 的共同用户数。</p>
+<h5 id="皮尔逊相关系数-Pearson-Correlation-Coefficient"><a href="#皮尔逊相关系数-Pearson-Correlation-Coefficient" class="headerlink" title="皮尔逊相关系数 (Pearson Correlation Coefficient)"></a>皮尔逊相关系数 (Pearson Correlation Coefficient)</h5><p>当有具体评分数据（显式反馈）时，皮尔逊相关系数是更好的选择。它通过将每个用户的评分减去该物品的平均分，来消除不同物品评分标准（如有的物品普遍分高，有的偏低）带来的偏差，更关注评分的相对趋势。</p>
+<figure class="highlight latex"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs latex">w<span class="hljs-built_in">_</span>&#123;ij&#125; = <span class="hljs-keyword">\frac</span>&#123;<span class="hljs-keyword">\sum</span><span class="hljs-built_in">_</span>&#123;u <span class="hljs-keyword">\in</span> U<span class="hljs-built_in">_</span>&#123;ij&#125;&#125; (r<span class="hljs-built_in">_</span>&#123;ui&#125; - <span class="hljs-keyword">\bar</span>&#123;r&#125;<span class="hljs-built_in">_</span>i)(r<span class="hljs-built_in">_</span>&#123;uj&#125; - <span class="hljs-keyword">\bar</span>&#123;r&#125;<span class="hljs-built_in">_</span>j)&#125;&#123;<span class="hljs-keyword">\sqrt</span>&#123;<span class="hljs-keyword">\sum</span><span class="hljs-built_in">_</span>&#123;u <span class="hljs-keyword">\in</span> U<span class="hljs-built_in">_</span>&#123;ij&#125;&#125; (r<span class="hljs-built_in">_</span>&#123;ui&#125; - <span class="hljs-keyword">\bar</span>&#123;r&#125;<span class="hljs-built_in">_</span>i)<span class="hljs-built_in">^</span>2&#125; <span class="hljs-keyword">\sqrt</span>&#123;<span class="hljs-keyword">\sum</span><span class="hljs-built_in">_</span>&#123;u <span class="hljs-keyword">\in</span> U<span class="hljs-built_in">_</span>&#123;ij&#125;&#125; (r<span class="hljs-built_in">_</span>&#123;uj&#125; - <span class="hljs-keyword">\bar</span>&#123;r&#125;<span class="hljs-built_in">_</span>j)<span class="hljs-built_in">^</span>2&#125;&#125;<br></code></pre></td></tr></table></figure>
+<p>其中，<code>U_ij</code> 是同时评价过物品 <code>i</code> 和 <code>j</code> 的用户集合，<code>r_ui</code> 是用户 <code>u</code> 对物品 <code>i</code> 的评分，<code>r̄_i</code> 是物品 <code>i</code> 的平均评分。</p>
+<hr>
+<h4 id="第二步：-候选物品推荐"><a href="#第二步：-候选物品推荐" class="headerlink" title="第二步： 候选物品推荐"></a>第二步： 候选物品推荐</h4><h5 id="加权求和-用于隐式反馈"><a href="#加权求和-用于隐式反馈" class="headerlink" title="加权求和 (用于隐式反馈)"></a>加权求和 (用于隐式反馈)</h5><p>计算出物品相似度后，可以预测用户 <code>u</code> 对未接触物品 <code>j</code> 的兴趣分数。方法是找到用户 <code>u</code> 历史上喜欢的物品，并将这些物品与物品 <code>j</code> 的相似度进行加权求和。</p>
+<figure class="highlight latex"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs latex">p(u, j) = <span class="hljs-keyword">\sum</span><span class="hljs-built_in">_</span>&#123;i <span class="hljs-keyword">\in</span> N(u)&#125; w<span class="hljs-built_in">_</span>&#123;ji&#125; <span class="hljs-keyword">\cdot</span> r<span class="hljs-built_in">_</span>&#123;ui&#125;<br></code></pre></td></tr></table></figure>
+<p>其中，<code>N(u)</code> 是用户 <code>u</code> 交互过的物品集合，<code>w_ji</code> 是物品 <code>j</code> 和 <code>i</code> 的相似度，<code>r_ui</code> 是用户 <code>u</code> 对物品 <code>i</code> 的兴趣强度（可以简单设为1）。</p>
+<h5 id="基于平均分的评分预测-用于显式反馈"><a href="#基于平均分的评分预测-用于显式反馈" class="headerlink" title="基于平均分的评分预测 (用于显式反馈)"></a>基于平均分的评分预测 (用于显式反馈)</h5><p>当使用皮尔逊相关系数时，评分预测公式会以物品的平均分作为基准，并根据用户对相似物品的评分偏好进行调整。</p>
+<figure class="highlight latex"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs latex"><span class="hljs-keyword">\hat</span>&#123;r&#125;<span class="hljs-built_in">_</span>&#123;uj&#125; = <span class="hljs-keyword">\bar</span>&#123;r&#125;<span class="hljs-built_in">_</span>j + <span class="hljs-keyword">\frac</span>&#123;<span class="hljs-keyword">\sum</span><span class="hljs-built_in">_</span>&#123;i <span class="hljs-keyword">\in</span> N(u)&#125; w<span class="hljs-built_in">_</span>&#123;ji&#125; (r<span class="hljs-built_in">_</span>&#123;ui&#125; - <span class="hljs-keyword">\bar</span>&#123;r&#125;<span class="hljs-built_in">_</span>i)&#125;&#123;<span class="hljs-keyword">\sum</span><span class="hljs-built_in">_</span>&#123;i <span class="hljs-keyword">\in</span> N(u)&#125; |w<span class="hljs-built_in">_</span>&#123;ji&#125;|&#125;<br></code></pre></td></tr></table></figure>
+<p>这个公式的逻辑是：用物品 <code>j</code> 的平均分作为基础预测，然后加上一个修正项，该修正项是用户对相似物品的评分（减去该物品的平均分）与相似度的加权平均。</p>
+<hr>
+<h4 id="第三步：一些优化"><a href="#第三步：一些优化" class="headerlink" title="第三步：一些优化"></a>第三步：一些优化</h4><h5 id="计算复杂度优化"><a href="#计算复杂度优化" class="headerlink" title="计算复杂度优化"></a>计算复杂度优化</h5><p>暴力计算所有物品对的相似度时间复杂度高达 <code>O(|I|^2)</code>，在物品数量巨大时不可行。由于许多物品对没有共同用户，相似度为0，计算它们是浪费时间。</p>
+<p><strong>基于用户-物品倒排表的优化</strong>：<br>该方法不直接遍历物品对，而是从用户出发，其时间复杂度为 <code>O(Σ|N(u)|²) ≈ O(R * k̄)</code>，其中 <code>R</code> 是总交互数，<code>k̄</code> 是用户平均交互的物品数。在稀疏数据中，此方法效率远高于暴力计算。</p>
+<ol>
+<li><strong>构建用户-物品倒排表</strong>：为每个用户 <code>u</code> 维护一个他&#x2F;她交互过的物品列表 <code>N(u)</code>。</li>
+<li><strong>计算物品共现矩阵</strong>：遍历每个用户的物品列表 <code>N(u)</code>，将列表中的物品两两配对 <code>(i, j)</code>，在共现矩阵 <code>C[i][j]</code> 中对应位置加1。这个矩阵记录了物品 <code>i</code> 和 <code>j</code> 的共同用户数。</li>
+<li><strong>计算最终相似度</strong>：利用共现矩阵 <code>C</code> 和每个物品的总用户数 <code>N</code>，代入余弦相似度公式，计算出最终的物品相似度矩阵。</li>
+</ol>
+<h5 id="Swing算法：面向工业场景的优化"><a href="#Swing算法：面向工业场景的优化" class="headerlink" title="Swing算法：面向工业场景的优化"></a>Swing算法：面向工业场景的优化</h5><p>传统ItemCF存在热门物品主导推荐、无法区分噪音点击等问题。Swing算法通过分析用户-物品交互的图结构来优化相似度计算，其核心思想是：如果两个物品被许多<strong>没有太多其他共同兴趣</strong>的用户对同时喜欢，那么这两个物品的关联性就更强。</p>
+<figure class="highlight latex"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs latex"><span class="hljs-keyword">\text</span>&#123;Swing&#125;(i, j) = <span class="hljs-keyword">\sum</span><span class="hljs-built_in">_</span>&#123;u <span class="hljs-keyword">\in</span> U<span class="hljs-built_in">_</span>i <span class="hljs-keyword">\cap</span> U<span class="hljs-built_in">_</span>j&#125; <span class="hljs-keyword">\sum</span><span class="hljs-built_in">_</span>&#123;v <span class="hljs-keyword">\in</span> U<span class="hljs-built_in">_</span>i <span class="hljs-keyword">\cap</span> U<span class="hljs-built_in">_</span>j, u <span class="hljs-keyword">\neq</span> v&#125; w<span class="hljs-built_in">_</span>u w<span class="hljs-built_in">_</span>v <span class="hljs-keyword">\frac</span>&#123;1&#125;&#123;<span class="hljs-keyword">\alpha</span> + |I<span class="hljs-built_in">_</span>u <span class="hljs-keyword">\cap</span> I<span class="hljs-built_in">_</span>v|&#125;<br></code></pre></td></tr></table></figure>
+<p>其中，<code>U_i</code> 是与物品 <code>i</code> 交互的用户集合，<code>I_u</code> 是用户 <code>u</code> 交互的物品集合，<code>w_u</code> 是用户权重，<code>α</code> 是平滑系数。这个公式惩罚了兴趣广泛的用户对所产生的共现。</p>
+<h5 id="Surprise算法：互补商品推荐"><a href="#Surprise算法：互补商品推荐" class="headerlink" title="Surprise算法：互补商品推荐"></a>Surprise算法：互补商品推荐</h5><p>作为Swing的扩展，专门用于挖掘具有<strong>时序性和方向性</strong>的互补关系（如先买手机再买手机壳）。它通过融合类别、商品和聚类三个层面的信息来综合衡量互补性。最终的互补关系分数通过线性组合得出：</p>
+<figure class="highlight latex"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs latex"><span class="hljs-keyword">\text</span>&#123;Surprise&#125;(i, j) = <span class="hljs-keyword">\alpha</span> <span class="hljs-keyword">\cdot</span> <span class="hljs-keyword">\text</span>&#123;Swing&#125;(i, j) + (1-<span class="hljs-keyword">\alpha</span>) <span class="hljs-keyword">\cdot</span> <span class="hljs-keyword">\text</span>&#123;Comp&#125;<span class="hljs-built_in">_</span>&#123;<span class="hljs-keyword">\text</span>&#123;cluster&#125;&#125;(i, j)<br></code></pre></td></tr></table></figure>
+<p>其中，<code>Comp_cluster(i, j)</code> 代表通过商品聚类缓解数据稀疏问题后，计算出的聚类层面的互补相关性。</p>
+
                 
               </div>
             

@@ -19,11 +19,13 @@
   <meta name="author" content="WhosefriendA">
   <meta name="keywords" content="">
   
-    <meta property="og:type" content="website">
-<meta property="og:title" content="WhosefriendA&#39;s Blog">
-<meta property="og:url" content="https://whosefrienda.github.io/index.html">
+    <meta property="og:type" content="article">
+<meta property="og:title" content="推荐系统学习(二)：召回-协同过滤-ItemCF">
+<meta property="og:url" content="https://whosefrienda.github.io/2026/01/15/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0-%E4%BA%8C-%EF%BC%9A%E5%8F%AC%E5%9B%9E-%E5%8D%8F%E5%90%8C%E8%BF%87%E6%BB%A4-ItemCF/index.html">
 <meta property="og:site_name" content="WhosefriendA&#39;s Blog">
 <meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-01-15T11:14:43.000Z">
+<meta property="article:modified_time" content="2026-01-15T11:14:43.519Z">
 <meta property="article:author" content="WhosefriendA">
 <meta name="twitter:card" content="summary_large_image">
   
@@ -31,11 +33,17 @@
     <meta name="referrer" content="no-referrer-when-downgrade">
   
   
-  <title>WhosefriendA&#39;s Blog</title>
+  <title>推荐系统学习(二)：召回-协同过滤-ItemCF - WhosefriendA&#39;s Blog</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
 
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
 
 
 
@@ -85,7 +93,7 @@
   <header>
     
 
-<div class="header-inner" style="height: 100vh;">
+<div class="header-inner" style="height: 70vh;">
   <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand" href="/">
@@ -185,23 +193,68 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('/img/IMG_20240331_191616.jpg') no-repeat center center; background-size: cover;">
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="愿你终与重要之人重逢"></span>
+            <span id="subtitle" data-typed-text="推荐系统学习(二)：召回-协同过滤-ItemCF"></span>
           
         </div>
 
         
-      </div>
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2026-01-15 19:14" pubdate>
+          2026年1月15日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          0 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          1 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
 
       
-        <div class="scroll-down-bar">
-          <i class="iconfont icon-arrowdown"></i>
-        </div>
+    
+  </div>
+
+
+        
+      </div>
+
       
     </div>
   </div>
@@ -213,256 +266,155 @@
 
   <main>
     
-      <div class="container nopadding-x-md">
-        <div id="board"
-          style="margin-top: 0">
-          
-          <div class="container">
-            <div class="row">
-              <div class="col-12 col-md-10 m-auto">
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">推荐系统学习(二)：召回-协同过滤-ItemCF</h1>
+            
+            
+              <div class="markdown-body">
                 
-
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2026/01/15/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0-%E4%BA%8C-%EF%BC%9A%E5%8F%AC%E5%9B%9E-%E5%8D%8F%E5%90%8C%E8%BF%87%E6%BB%A4-ItemCF/" target="_self">
-          推荐系统学习(二)：召回-协同过滤-ItemCF
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2026/01/15/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0-%E4%BA%8C-%EF%BC%9A%E5%8F%AC%E5%9B%9E-%E5%8D%8F%E5%90%8C%E8%BF%87%E6%BB%A4-ItemCF/" target="_self">
-        <div>
-          
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2026-01-15 19:14" pubdate>
-              2026-01-15
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2026/01/08/WebSocket/" target="_self">
-          再探 WebSocket -不止于全双工
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2026/01/08/WebSocket/" target="_self">
-        <div>
-          如果你像我一样，对 HTTP&#x2F;1&#x2F;2&#x2F;3 的演进和 gRPC 的四种调用模式很了解，但谈起 websocket 时认知止于全双工通信，那么 WebSocket 值得我们用同样的视角，重新审视一番。 参照对比：它与 HTTP 有何不同？和另一个全双工的 gRPC 双向流又有什么区别？1. 对比 HTTP&#x2F;1, 2, 3将 HTTP 简单地描述为“一问一答”不够
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2026-01-08 17:29" pubdate>
-              2026-01-08
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2026/01/08/%E5%88%9D%E8%A7%81%E5%B9%BF%E5%91%8A%E7%B3%BB%E7%BB%9F-%E5%B8%B8%E8%A7%81%E6%A6%82%E5%BF%B5%E5%8F%8A%E5%8D%95%E6%AC%A1%E5%B1%95%E7%A4%BA%E5%85%A8%E6%B5%81%E7%A8%8B/" target="_self">
-          初见广告系统-常见概念及单次展示全流程
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2026/01/08/%E5%88%9D%E8%A7%81%E5%B9%BF%E5%91%8A%E7%B3%BB%E7%BB%9F-%E5%B8%B8%E8%A7%81%E6%A6%82%E5%BF%B5%E5%8F%8A%E5%8D%95%E6%AC%A1%E5%B1%95%E7%A4%BA%E5%85%A8%E6%B5%81%E7%A8%8B/" target="_self">
-        <div>
-          概念pCTR :预估点击率pCVR :预估转化率 1.ecpm : effective Cost Per Mille，有效的千次展示成本预估点击率点击出价pCTR (predicted Click-Through Rate)：模型预估的、这个用户看到这个广告后，点击它的概率。这部分的技术和推荐系统的CTR预估模型几乎完全一样，都使用LR、GBDT、DeepFM、WDL等深度学习模型。模型输入的特征
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2026-01-08 10:04" pubdate>
-              2026-01-08
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2025/12/15/Elasticsearch%E5%85%A5%E9%97%A8%E4%BD%BF%E7%94%A8/" target="_self">
-          Elasticsearch入门使用
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2025/12/15/Elasticsearch%E5%85%A5%E9%97%A8%E4%BD%BF%E7%94%A8/" target="_self">
-        <div>
-          #ES的部分原理 默认打分规则默认相关性评分 (Relevance Score)：默认使用 BM25 算法（可以看作是 TF-IDF 的升级版）。它会综合考虑：  词频 (Term Frequency)：关键词在文档中出现的次数。 逆文档频率 (Inverse Document Frequency)：关键词在所有文档中的稀有程度。 字段长度 (Field Length)：字段越短，匹配到的权重越高
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2025-12-15 11:04" pubdate>
-              2025-12-15
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2025/12/11/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0-%E4%B8%80-%EF%BC%9A%E5%8F%AC%E5%9B%9E-%E5%8D%8F%E5%90%8C%E8%BF%87%E6%BB%A4-UserCF/" target="_self">
-          推荐系统学习(一)：召回-协同过滤-UserCF
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2025/12/11/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0-%E4%B8%80-%EF%BC%9A%E5%8F%AC%E5%9B%9E-%E5%8D%8F%E5%90%8C%E8%BF%87%E6%BB%A4-UserCF/" target="_self">
-        <div>
-          基于用户的协同过滤(userCF)第一步：用户相似度计算杰卡德相似系数被推荐用户A，另一个用户B，只计算他们共同 item 数 占 A item 数 的比值。公式表现为： 1w_&#123;uv&#125; = \frac&#123;|N(u) \cap N(v)|&#125;&#123;|N(u) \cup N(v)|&#125; 余弦相似度通过向量化表示用户，对两个用户求向量夹角，可以体现出两
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2025-12-11 18:16" pubdate>
-              2025-12-11
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2024/10/21/ubuntu%E5%88%9B%E5%BB%BA%E5%BA%94%E7%94%A8%E7%9A%84%E5%BF%AB%E6%8D%B7%E6%96%B9%E5%BC%8F/" target="_self">
-          ubuntu创建应用的快捷方式
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/10/21/ubuntu%E5%88%9B%E5%BB%BA%E5%BA%94%E7%94%A8%E7%9A%84%E5%BF%AB%E6%8D%B7%E6%96%B9%E5%BC%8F/" target="_self">
-        <div>
-          在ubuntu上我们通过deb包安装的软件可能会没有快捷方式，这个时候就需要我们自己在终端上创建快捷方式了。 主要流程有以下几步，这里我们以go语言的IDE goland为例 1.创建对应的desktop文件比如goland，我们需要在&#x2F;usr&#x2F;share&#x2F;applications目录下创建goland.desktop 12cd /usr/share/applicat
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2024-10-21 20:53" pubdate>
-              2024-10-21
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2024/03/28/%E5%A6%82%E4%BD%95%E5%9C%A8GNU-Linux%E4%B8%8B%E5%AE%9E%E7%8E%B0%E8%87%AA%E5%B7%B1%E7%9A%84shell/" target="_self">
-          如何在GNU/Linux下实现自己的shell
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2024/03/28/%E5%A6%82%E4%BD%95%E5%9C%A8GNU-Linux%E4%B8%8B%E5%AE%9E%E7%8E%B0%E8%87%AA%E5%B7%B1%E7%9A%84shell/" target="_self">
-        <div>
-          TASK打造一个绝无伦比的 xxx-super-shell (xxx 是你的名字)，它能实现下面这些功能：  实现 管道 (也就是 |)  实现 输入输出重定向(也就是 &lt; &gt; &gt;&gt;)  要求实现 在管道组合命令的两端实现重定向运算符    1234# Require cat &lt; 1.txt | grep -C 10 abc | grep -L efd | tac &
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2024-03-28 15:59" pubdate>
-              2024-03-28
-            </time>
-          </div>
-        
-        
-        
-      </div>
-    </article>
-  </div>
-
-
-
-
-
+                
+                
               </div>
-            </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>推荐系统学习(二)：召回-协同过滤-ItemCF</div>
+      <div>https://whosefrienda.github.io/2026/01/15/推荐系统学习-二-：召回-协同过滤-ItemCF/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>WhosefriendA</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2026年1月15日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
           </div>
         </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2026/01/08/WebSocket/" title="再探 WebSocket -不止于全双工">
+                        <span class="hidden-mobile">再探 WebSocket -不止于全双工</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
       </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
     
 
     
@@ -581,6 +533,99 @@
 
 
 
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
 
   <script  src="/js/local-search.js" ></script>
 
